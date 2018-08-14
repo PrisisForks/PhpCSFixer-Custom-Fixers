@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PedroTroller\CS\Fixer\CodingStyle;
 
 use PedroTroller\CS\Fixer\AbstractFixer;
 use PhpCsFixer\Fixer\Basic\BracesFixer;
-use PhpCsFixer\Fixer\ConfigurationDefinitionFixerInterface;
+use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\Fixer\WhitespacesAwareFixerInterface;
 use PhpCsFixer\FixerConfiguration\FixerConfigurationResolver;
 use PhpCsFixer\FixerConfiguration\FixerOptionBuilder;
@@ -12,9 +14,9 @@ use PhpCsFixer\Tokenizer\Token;
 use PhpCsFixer\Tokenizer\Tokens;
 use SplFileInfo;
 
-final class LineBreakBetweenMethodArgumentsFixer extends AbstractFixer implements ConfigurationDefinitionFixerInterface, WhitespacesAwareFixerInterface
+final class LineBreakBetweenMethodArgumentsFixer extends AbstractFixer implements ConfigurableFixerInterface, WhitespacesAwareFixerInterface
 {
-    const T_TYPEHINT_SEMI_COLON = 10025;
+    public const T_TYPEHINT_SEMI_COLON = 10025;
 
     /**
      * {@inheritdoc}
@@ -81,7 +83,25 @@ SPEC;
     /**
      * {@inheritdoc}
      */
-    protected function applyFix(SplFileInfo $file, Tokens $tokens)
+    public function getConfigurationDefinition()
+    {
+        return new FixerConfigurationResolver([
+            (new FixerOptionBuilder('max-args', 'Then maximum number of arguments authorized in a same function definition'))
+                ->setDefault(3)
+                ->getOption(),
+            (new FixerOptionBuilder('max-length', 'Then maximum line size authorized'))
+                ->setDefault(120)
+                ->getOption(),
+            (new FixerOptionBuilder('automatic-argument-merge', 'Does arguments have to be merged when line is shorter than max-args and/or max-length'))
+                ->setDefault(true)
+                ->getOption(),
+        ]);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function applyFix(SplFileInfo $file, Tokens $tokens): void
     {
         $functions = [];
 
@@ -139,25 +159,7 @@ SPEC;
         }
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function createConfigurationDefinition()
-    {
-        return new FixerConfigurationResolver([
-            (new FixerOptionBuilder('max-args', 'Then maximum number of arguments authorized in a same function definition'))
-                ->setDefault(3)
-                ->getOption(),
-            (new FixerOptionBuilder('max-length', 'Then maximum line size authorized'))
-                ->setDefault(120)
-                ->getOption(),
-            (new FixerOptionBuilder('automatic-argument-merge', 'Does arguments have to be merged when line is shorter than max-args and/or max-length'))
-                ->setDefault(true)
-                ->getOption(),
-        ]);
-    }
-
-    private function splitArgs(Tokens $tokens, $index)
+    private function splitArgs(Tokens $tokens, $index): void
     {
         $openBraceIndex  = $tokens->getNextTokenOfKind($index, ['(']);
         $closeBraceIndex = $this->analyze($tokens)->getClosingParenthesis($openBraceIndex);
@@ -219,7 +221,7 @@ SPEC;
         $tokens->removeTrailingWhitespace($tokens->getPrevMeaningfulToken($closeBraceIndex));
     }
 
-    private function mergeArgs(Tokens $tokens, $index)
+    private function mergeArgs(Tokens $tokens, $index): void
     {
         $openBraceIndex  = $tokens->getNextTokenOfKind($index, ['(']);
         $closeBraceIndex = $this->analyze($tokens)->getClosingParenthesis($openBraceIndex);

@@ -2,7 +2,7 @@
 <?php
 
 use PedroTroller\CS\Fixer\AbstractFixer;
-use PhpCsFixer\Diff\v3_0\Differ;
+use PhpCsFixer\Diff\Differ;
 use PhpCsFixer\Fixer\ConfigurableFixerInterface;
 use PhpCsFixer\FixerDefinition\CodeSample;
 use PhpCsFixer\Tokenizer\Tokens;

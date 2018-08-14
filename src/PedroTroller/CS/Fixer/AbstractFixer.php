@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace PedroTroller\CS\Fixer;
 
 use PhpCsFixer\AbstractFixer as PhpCsFixer;
@@ -74,6 +76,7 @@ abstract class AbstractFixer extends PhpCsFixer
      */
     public function getDeprecationReplacement()
     {
+        return;
     }
 
     /**

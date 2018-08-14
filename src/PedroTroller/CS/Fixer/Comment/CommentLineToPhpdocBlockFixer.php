@@ -84,7 +84,7 @@ PHP;
     /*
      * {@inheritdoc}
      */
-    protected function applyFix(SplFileInfo $file, Tokens $tokens)
+    protected function applyFix(SplFileInfo $file, Tokens $tokens): void
     {
         $elements = $this->analyze($tokens)->getClassyElements();
 
